@@ -1,7 +1,7 @@
 module full_adder(a,b,cin,sum,carry);
     
     input a,b,cin;
-    output sum,carry;
+    output reg sum,carry;
     
     always@(*)begin
         sum = a ^ b ^ c;
