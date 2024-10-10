@@ -1,0 +1,13 @@
+module full_adder(a, b, cin, sum, carry);
+    
+    input a, b, cin;
+    output sum, carry;
+    
+    wire w1, w2, w3;
+    
+    Half_Adder HA1(a, b, w1, w2);
+    Half_Adder HA2(w1, cin, sum, w3);
+    
+    or o1(carry, w2, w3);
+    
+endmodule
