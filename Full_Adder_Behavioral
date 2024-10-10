@@ -1,0 +1,11 @@
+module full_adder(a,b,cin,sum,carry);
+    
+    input a,b,cin;
+    output sum,carry;
+    
+    always@(*)begin
+        sum = a ^ b ^ c;
+        carry = a&b | b&cin | cin&a;
+    end
+
+endmodule
