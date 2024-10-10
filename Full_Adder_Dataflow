@@ -5,6 +5,5 @@ module full_adder(a,b,cin,sum,carry);
     
     assign sum = a ^ b ^ cin;
     assign carry = a & b | b&c | cin&a;
-    end
     
 endmodule
