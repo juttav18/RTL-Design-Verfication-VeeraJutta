@@ -1,0 +1,20 @@
+module PIPO(
+    input clk,
+    input rst,
+    input [3:0] pi, // parallel input
+    input load,     // load signal
+    output [3:0] po // parallel output
+);
+
+    reg [3:0] temp;
+
+    always @(posedge clk) begin
+        if (rst)
+            temp <= 0;
+        else if (load)
+            temp <= pi;
+    end
+
+    assign po = temp; 
+
+endmodule
