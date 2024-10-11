@@ -8,11 +8,11 @@ module single_port_ram_1(
         reg [5:0] addr_reg;
         
         always@(posedge clk)
-        begin
-	if(write_enable)
-            memory[wrt_addr] <= data_in;
-        addr_reg <= rd_addr; 
-        end
+            begin
+	    if(write_enable)
+               memory[wrt_addr] <= data_in;
+            addr_reg <= rd_addr; 
+            end
         
         assign data_out = memory[addr_reg];
 
