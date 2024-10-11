@@ -1,0 +1,19 @@
+module SIPO(
+    input clk,
+    input rst,
+    input si,
+    output [3:0] so
+);
+
+    reg [3:0] temp;
+
+    always @(posedge clk) begin
+        if (rst)
+            temp <= 0;
+        else
+            temp <= {temp[2:0], si};
+    end
+
+    assign so = temp; 
+
+endmodule
