@@ -1,0 +1,27 @@
+module range_10to40_counter(
+    input clk,
+    input rst,
+    input load,
+    input u_d,
+    input [7:0] data,
+    output reg [7:0] count
+);
+
+    reg [7:0] temp;
+
+    always @(posedge clk or posedge rst) begin
+        if (rst | temp > 8'd40 | temp < 8'd10) 
+            temp <= 8'd10;
+        else if (load) 
+            temp <= data;
+        else if (u_d) 
+            temp <= temp>8'd40 ? 8'd10 : temp + 1;
+        else 
+            temp <= temp<8'd10 ? 8'd40 : temp - 1;
+    end
+
+    always @(posedge clk) begin
+        count <= temp;
+    end
+    
+endmodule
