@@ -1,5 +1,5 @@
 module up_counter(input clk,rst,
-                  output reg count);
+                  output reg [7:0]count);
     
     reg [7:0]temp;
     
