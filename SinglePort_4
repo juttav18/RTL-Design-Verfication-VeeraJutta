@@ -1,19 +1,19 @@
 module single_port_ram_1(
 	input write_enable,clk,
-  input [5:0] rd_addr,wrt_addr,
+        input [5:0] rd_addr,wrt_addr,
 	input [7:0] data_in,
 	output [7:0] data_out );
 
-    reg [7:0] memory[63:0];
-    reg [5:0] addr_reg;
-
-    always@(posedge clk)
+        reg [7:0] memory[63:0];
+        reg [5:0] addr_reg;
+        
+        always@(posedge clk)
         begin
-		if(write_enable)
+	if(write_enable)
             memory[wrt_addr] <= data_in;
         addr_reg <= rd_addr; 
-    end
-    
-    assign data_out = memory[addr_reg];
+        end
+        
+        assign data_out = memory[addr_reg];
 
 endmodule
