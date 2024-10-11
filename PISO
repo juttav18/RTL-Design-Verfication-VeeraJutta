@@ -1,0 +1,22 @@
+module PISO(
+    input clk,
+    input rst,
+    input [3:0] pi, // parallel input
+    input load,     // load signal
+    output so       // serial output
+);
+
+    reg [3:0] temp;
+
+    always @(posedge clk) begin
+        if (rst)
+            temp <= 0;
+        else if (load)
+            temp <= pi; // Load parallel input into the register
+        else
+            temp <= {temp[2:0], 1'b0}; // Shift left and append 0 at LSB
+    end
+
+    assign so = temp[3]; // Assign the MSB of temp to the serial output
+
+endmodule
