@@ -1,0 +1,13 @@
+module top_module(
+    input clk,
+    input [7:0] in,
+    output reg [7:0] any_edge);
+    
+    reg [7:0] d_last;  
+    
+    always @(posedge clk) begin
+        d_last <= in;           
+        any_edge <= (in ^ d_last);
+    end
+    
+endmodule
