@@ -11,6 +11,6 @@ module single_port_ram_1(
 	if(write_enable)
             memory[wrt_addr] = data_in;
         data_out = memory[rd_addr]; //reading new data
-    end
+        end
 
 endmodule
