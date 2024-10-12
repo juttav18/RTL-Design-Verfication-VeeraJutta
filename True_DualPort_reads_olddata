@@ -9,8 +9,8 @@ module tdram(q_a, q_b, data_a, data_b, addr_a, addr_b, we_a, we_b, clk);
 	// Port A
 	always @ (posedge clk)
 	begin
-		if (we_a) 
-			sram[addr_a] <= data_a;
+	if (we_a) 
+            sram[addr_a] <= data_a;
         q_a <= sram[addr_a];
 	end
 	
