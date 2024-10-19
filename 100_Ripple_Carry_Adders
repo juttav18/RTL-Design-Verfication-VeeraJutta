@@ -1,0 +1,41 @@
+module top_module( 
+    input [99:0] a, b,    // 100-bit inputs
+    input cin,             // Carry-in for the first full adder
+    output [99:0] cout,    // Carry-out from each full adder
+    output [99:0] sum      // 100-bit sum output
+);
+
+    // Instantiate 100 full adders using a generate loop
+    genvar i;
+    generate
+        for (i = 0; i < 100; i = i + 1) begin: adder_block
+            if (i == 0) begin
+                // For the first full adder, cin is used as the carry-in
+                full_adder fa (
+                    .a(a[i]),
+                    .b(b[i]),
+                    .cin(cin),   // Use cin for the first full adder
+                    .sum(sum[i]),
+                    .cout(cout[i])
+                );
+            end else begin
+                // For subsequent adders, carry-out from the previous adder is carry-in
+                full_adder fa (
+                    .a(a[i]),
+                    .b(b[i]),
+                    .cin(cout[i-1]),  // Use previous adder's carry-out as carry-in
+                    .sum(sum[i]),
+                    .cout(cout[i])
+                );
+            end
+        end
+    endgenerate
+
+endmodule
+module full_adder(
+    input a, b, cin,
+    output sum, cout
+);
+    assign {cout, sum} = a + b + cin;  // Full adder logic
+endmodule
+
