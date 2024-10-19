@@ -1,0 +1,41 @@
+module bcd_fadd (
+    input [3:0] a,   // 4-bit BCD digit
+    input [3:0] b,   // 4-bit BCD digit
+    input       cin, // Carry-in
+    output      cout, // Carry-out
+    output [3:0] sum // 4-bit BCD sum
+);
+    wire [4:0] temp_sum;
+    
+    assign temp_sum = a + b + cin; // Add BCD digits with carry
+    assign cout = (temp_sum > 9);  // If sum > 9, set carry-out
+    assign sum = cout ? (temp_sum - 10) : temp_sum; // Adjust if sum > 9
+endmodule
+
+module top_module( 
+    input [7:0] a,   // 2-digit BCD input
+    input [7:0] b,   // 2-digit BCD input
+    input       cin, // Carry-in
+    output      cout, // Final carry-out
+    output [7:0] sum  // 2-digit BCD sum
+);
+    wire carry;
+
+    // First BCD digit (ones place)
+    bcd_fadd adder0 (
+        .a(a[3:0]),   // Ones place of 'a'
+        .b(b[3:0]),   // Ones place of 'b'
+        .cin(cin),    // Initial carry-in
+        .cout(carry), // Carry to the tens place
+        .sum(sum[3:0]) // Sum for the ones place
+    );
+    
+    // Second BCD digit (tens place)
+    bcd_fadd adder1 (
+        .a(a[7:4]),   // Tens place of 'a'
+        .b(b[7:4]),   // Tens place of 'b'
+        .cin(carry),  // Carry from the ones place
+        .cout(cout),  // Final carry-out
+        .sum(sum[7:4]) // Sum for the tens place
+    );
+endmodule
