@@ -1,0 +1,59 @@
+module asynchfifo(input clk_w,clk_r,rst,wr_en,rd_en,
+                  input [7:0]buf_in,
+                  output reg[7:0]buf_out,
+                  output reg[6:0]counter,
+                  output reg buf_full,buf_empty);
+    
+    reg [5:0]wrt_ptr,rd_ptr;
+    reg [7:0]buf_mem[63:0];
+    
+    always@(counter)begin
+        buf_full = (counter == 64);
+        buf_empty = (counter == 0);
+    end
+    
+    always@(posedge clk_w or posedge rst)begin
+        if (rst)
+            counter <= 0;
+        else if (!buf_full && wr_en)
+            counter <= counter + 1;
+    end
+    
+    always@(posedge clk_r)begin
+        if (!buf_empty && rd_en)
+            counter <= counter -1;
+        else
+            counter <= counter;
+    end
+    
+    always@(posedge clk_r or posedge rst)begin
+        if (!buf_empty && rd_en)
+            buf_out <= buf_mem[rd_ptr];
+        else:
+            buf_out <= buf_out;
+    end
+    
+    always@(posedge clk_w)begin
+        if (!buf_full && wr_en)
+            buf_mem[wrt_ptr] <= buf_in;
+        else
+            buf_mem[wrt_ptr] <= buf_mem[wrt_ptr];
+    end
+    
+    always@(posedge clk_w or posedge rst)begin
+        if (!buf_full && wr_en)
+            wrt_ptr <= wrt_ptr + 1;
+        else
+            wrt_ptr <= wrt_ptr;
+    end
+    
+    always@(posedge clk_r or posedge rst)begin
+        if (!buf_empty && rd_en)
+            rd_ptr <= rd_ptr + 1;
+        else
+            rd_ptr <= rd_ptr;
+    end
+    
+endmodule
+    
+    
