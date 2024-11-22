@@ -1,0 +1,68 @@
+module fsm (
+    input clk,
+    input rst,
+    input start_signal,
+    input init_complete,
+    input error_signal,
+    input error_resolved,
+    input mission_complete,
+    output reg safely_shutdown
+);
+
+    typedef enum reg [2:0] {
+        S0 = 3'b000,
+        S1 = 3'b001,
+        S2 = 3'b010,
+        S3 = 3'b011,
+        S4 = 3'b100
+    } state_t;
+
+    state_t state, next_state;
+
+    always @(posedge clk or posedge rst) begin
+        if (rst)
+            state <= S0;
+        else
+            state <= next_state;
+    end
+
+    always @(*) begin
+        next_state = state;
+        safely_shutdown = 1'b0;
+
+        case (state)
+            S0: begin
+                if (start_signal) 
+                    next_state = S1;
+                else 
+                    safely_shutdown = 1'b1;
+            end
+
+            S1: begin
+                if (init_complete)
+                    next_state = S2;
+            end
+
+            S2: begin
+                if (error_signal)
+                    next_state = S3;
+                else if (mission_complete)
+                    next_state = S0;
+            end
+
+            S3: begin
+                if (error_resolved)
+                    next_state = S4;
+                else if (mission_complete)
+                    next_state = S0;
+            end
+
+            S4: begin
+                if (mission_complete)
+                    next_state = S0;
+            end
+
+            default: next_state = S0;
+        endcase
+    end
+endmodule
