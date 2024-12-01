@@ -1,0 +1,6 @@
+module or_phase_det(input clk_ref, clk_fb,
+                    output phase_error);
+    
+    assign phase_error = clk_fb ^ clk_ref;
+    
+endmodule
