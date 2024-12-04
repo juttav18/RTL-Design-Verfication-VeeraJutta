@@ -1,12 +1,25 @@
 module pll_fsm (
-    input clk,
-    input reset,
-    input pll_locked,
-    output reg pll_enable
+    input wire clk,           // System clock
+    input wire reset,         // Asynchronous reset
+    input wire pll_locked,    // Input signal from PLL indicating lock status
+    output reg pll_enable,    // Enable signal for the PLL
+    output reg config_done,   // Signal indicating configuration is complete
+    output reg error          // Error flag for lock failure
 );
-    typedef enum logic [1:0] {IDLE, WAIT_LOCK, LOCKED} state_t;
-    state_t current_state, next_state;
 
+    // State Encoding
+    typedef enum logic [2:0] {
+        IDLE          = 3'b000, // Waiting state
+        CONFIGURE     = 3'b001, // Configuring PLL parameters
+        ENABLE_PLL    = 3'b010, // Enabling PLL
+        LOCK_DETECTION = 3'b011, // Checking lock status
+        STEADY_STATE  = 3'b100, // PLL is locked and operational
+        ERROR_STATE   = 3'b101  // Error handling state
+    } state_t;
+
+    state_t current_state, next_state; // Current and next states
+
+    // State Transition Logic
     always @(posedge clk or posedge reset) begin
         if (reset)
             current_state <= IDLE;
@@ -14,20 +27,62 @@ module pll_fsm (
             current_state <= next_state;
     end
 
+    // Next State Logic
     always @(*) begin
+        // Default values for outputs
+        pll_enable = 0;
+        config_done = 0;
+        error = 0;
+        next_state = current_state; // Default to holding current state
+
         case (current_state)
-            IDLE: 
-                next_state = pll_enable ? WAIT_LOCK : IDLE;
-            WAIT_LOCK: 
-                next_state = pll_locked ? LOCKED : WAIT_LOCK;
-            LOCKED: 
-                next_state = LOCKED;
-            default: 
-                next_state = IDLE;
+            IDLE: begin
+                // Transition to CONFIGURE state to start configuration
+                next_state = CONFIGURE;
+            end
+
+            CONFIGURE: begin
+                // Assume configuration is instantaneous for this example
+                config_done = 1;
+                next_state = ENABLE_PLL;
+            end
+
+            ENABLE_PLL: begin
+                // Enable PLL and transition to lock detection state
+                pll_enable = 1;
+                next_state = LOCK_DETECTION;
+            end
+
+            LOCK_DETECTION: begin
+                if (pll_locked) 
+                    next_state = STEADY_STATE; // Move to steady-state if locked
+                else 
+                    next_state = ERROR_STATE; // Transition to error state on failure
+            end
+
+            STEADY_STATE: begin
+                // Remain in steady state as long as PLL is locked
+                if (!pll_locked)
+                    next_state = ERROR_STATE; // Go to error if lock is lost
+            end
+
+            ERROR_STATE: begin
+                error = 1;
+                // Stay in error state until reset
+            end
+
+            default: begin
+                next_state = IDLE; // Default fallback state
+            end
         endcase
     end
 
-    always @(posedge clk) begin
-        pll_enable <= (current_state == WAIT_LOCK);
+    // Output Logic
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            pll_enable <= 0;
+            config_done <= 0;
+            error <= 0;
+        end
     end
 endmodule
