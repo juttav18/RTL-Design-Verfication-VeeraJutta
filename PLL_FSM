@@ -1,0 +1,33 @@
+module pll_fsm (
+    input clk,
+    input reset,
+    input pll_locked,
+    output reg pll_enable
+);
+    typedef enum logic [1:0] {IDLE, WAIT_LOCK, LOCKED} state_t;
+    state_t current_state, next_state;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset)
+            current_state <= IDLE;
+        else
+            current_state <= next_state;
+    end
+
+    always @(*) begin
+        case (current_state)
+            IDLE: 
+                next_state = pll_enable ? WAIT_LOCK : IDLE;
+            WAIT_LOCK: 
+                next_state = pll_locked ? LOCKED : WAIT_LOCK;
+            LOCKED: 
+                next_state = LOCKED;
+            default: 
+                next_state = IDLE;
+        endcase
+    end
+
+    always @(posedge clk) begin
+        pll_enable <= (current_state == WAIT_LOCK);
+    end
+endmodule
