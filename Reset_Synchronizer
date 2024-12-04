@@ -1,0 +1,16 @@
+module rst_sync(input i_rstn,
+                input clk, 
+                output reg rstn);
+    
+    reg temp;
+    
+    always@(posedge clk or negedge i_rstn)begin
+        if (~i_rstn) begin 
+            temp <= 1'b0; 
+            rstn <= 1'b0;end
+        else begin
+            temp <= 1'b1; 
+            rstn <= temp;end
+    end
+    
+endmodule
