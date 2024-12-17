@@ -17,7 +17,7 @@ module dff(dff_if vif);
     
     else
       
-      vif.dout <= din;
+      vif.dout <= vif.din;
     
   end
   
