@@ -2,7 +2,7 @@ module spi_master(input clk, newd,rst,
                   input [11:0] din, 
                   output reg sclk,cs,mosi);
   
-    typedef enum bit [1:0] {idle = 2'b00, enable = 2'b01, send = 2'b10, comp = 2'b11 } state_type;
+    typedef enum bit [1:0] {idle = 2'b00, send = 2'b01 } state_type;
     state_type state = idle;
     
     int countc = 0;
