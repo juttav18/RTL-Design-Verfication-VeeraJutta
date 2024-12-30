@@ -124,7 +124,19 @@ module top (input clk, rst, newd,
     
 endmodule
 
-module tb(  );
+interface spi_if;
+
+  logic clk;
+  logic newd;
+  logic rst;
+  logic [11:0] din;
+  logic sclk;
+  logic cs;
+  logic mosi;
+  
+endinterface
+
+module tb();
     
     reg clk = 0, rst = 0, newd = 0;
     reg [11:0] din = 0;
@@ -151,17 +163,3 @@ module tb(  );
     end
 
 endmodule
-
-interface spi_if;
-
-  
-  logic clk;
-  logic newd;
-  logic rst;
-  logic [11:0] din;
-  logic sclk;
-  logic cs;
-  logic mosi;
-  
-  
-endinterface
