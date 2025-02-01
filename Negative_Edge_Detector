@@ -1,13 +1,13 @@
 module top_module(
     input clk,
     input [7:0] in,
-    output reg [7:0] pedge);
+    output reg [7:0] nedge);
     
     reg [7:0] d_last;  
     
     always @(posedge clk) begin
-        d_last <= in;           
-        pedge <= (in & ~d_last); 
+        nedge <= (~in & d_last); // Detects negative edges
+        d_last <= in;            // Updates the previous state
     end
     
 endmodule
