@@ -1,0 +1,8 @@
+module gray_to_binary (
+    input [2:0] gray,  // 3-bit Gray Code Input
+    output [2:0] binary // 3-bit Binary Output
+);
+    assign binary[2] = gray[2];                    // MSB remains the same
+    assign binary[1] = gray[2] ^ gray[1];          // XOR of G2 and G1
+    assign binary[0] = binary[1] ^ gray[0];        // XOR of B1 and G0
+endmodule
