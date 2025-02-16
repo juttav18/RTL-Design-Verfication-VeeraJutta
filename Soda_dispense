@@ -1,0 +1,93 @@
+module vending_machine (
+    input clk,               
+    input reset,             
+    input [2:0] coin,        
+    output reg dispense,     
+    output reg [2:0] change, 
+    output reg [1:0] cans,   
+    output reg error         
+);
+ 
+    localparam IDLE         = 3'b000;  
+    localparam ONE_DOLLAR   = 3'b001;  
+    localparam TWO_DOLLARS  = 3'b010;  
+    localparam THREE_DOLLARS= 3'b011;  
+    localparam FIVE_DOLLARS = 3'b101;  
+    localparam SIX_DOLLARS  = 3'b110;  
+ 
+    reg [2:0] state;  
+ 
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= IDLE;      
+            dispense <= 0;
+            change <= 3'b000;
+            cans <= 2'b00;
+            error <= 0;
+        end else begin
+            
+            error <= 0;  
+            dispense <= 0;
+ 
+            // Check for invalid coins
+            if (coin != 3'b000 && coin != 3'b001 && coin != 3'b010 && coin != 3'b100) begin
+                error <= 1;  // Trigger error for invalid coins
+                state <= IDLE;  // Reset state to clear partial transactions
+                dispense <= 0;
+                cans <= 2'b00;
+                change <= 3'b000;
+            end else begin
+                // Process valid coins
+                case (state)
+                    IDLE: begin
+                        change <= 3'b000;
+                        cans <= 2'b00;
+                        if (coin == 3'b001) state <= ONE_DOLLAR;   // $1 
+                        else if (coin == 3'b010) state <= TWO_DOLLARS;  // $2 
+                        else if (coin == 3'b100) state <= FIVE_DOLLARS;  // $5 
+                    end
+ 
+                    ONE_DOLLAR: begin
+                        if (coin == 3'b001) state <= TWO_DOLLARS;  // $1 more inserted
+                        else if (coin == 3'b010) state <= THREE_DOLLARS;  // $2 more inserted
+                        else if (coin == 3'b100) state <= SIX_DOLLARS;  // $5 more inserted
+                    end
+ 
+                    TWO_DOLLARS: begin
+                        dispense <= 1;
+                        cans <= 2'b01;  // dispense 1 can
+                        change <= 3'b000;
+                        state <= IDLE;  
+                    end
+ 
+                    THREE_DOLLARS: begin
+                        dispense <= 1;
+                        cans <= 2'b01;  // dispense 1 can
+                        change <= 3'b001; // return $1
+                        state <= IDLE;  
+                    end
+ 
+                    FIVE_DOLLARS: begin
+                        dispense <= 1;
+                        cans <= 2'b10;  // dispense 2 cans
+                        change <= 3'b001; // return $1
+                        state <= IDLE;  
+                    end
+ 
+                    SIX_DOLLARS: begin
+                        dispense <= 1;
+                        cans <= 2'b11;  // dispense 3 cans
+                        change <= 3'b000;
+                        state <= IDLE;  
+                    end
+ 
+                    default: begin
+                        error <= 1;
+                        change <= 3'b000;
+                        state <= IDLE;  
+                    end
+                endcase
+            end
+        end
+    end
+endmodule
