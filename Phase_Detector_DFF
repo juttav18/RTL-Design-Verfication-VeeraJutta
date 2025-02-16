@@ -1,0 +1,16 @@
+module dff_phase_detect(input clk_ref, clk_fb,
+                        output reg up, down);
+    
+    always@(posedge clk_ref or posedge clk_fb)begin
+        if (clk_ref && ! clk_fb)begin
+            up <= 1;
+            down <= 0;end
+        else if (!clk_ref && clk_fb)begin
+            up <= 0;
+            down <= 1;end
+        else begin 
+            up <= 0;
+            down <= 0;end
+    end
+        
+endmodule
