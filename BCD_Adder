@@ -1,0 +1,24 @@
+module bcd_add(input [3:0] a, b,
+               input cin,
+               output reg [3:0] s,
+               output reg c);
+
+    reg [4:0] sum_temp;
+
+    always @(*) begin
+        // Binary addition
+        sum_temp = a + b + cin;
+
+        // Check for invalid BCD and apply correction
+        if (sum_temp > 9) begin
+            sum_temp = sum_temp + 6; // Add 6 for BCD correction
+            c = 1;                   // Set carry-out
+            end
+        else begin
+            c = 0;                   // No carry-out
+        end
+
+        s = sum_temp[3:0];           // Assign the lower 4 bits to result
+    end
+
+endmodule
