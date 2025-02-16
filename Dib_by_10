@@ -1,0 +1,28 @@
+module divby10 (
+    input clk,
+    input rst,
+    output reg f_div10
+);
+
+    reg [3:0] count;
+    reg q1;
+
+    always @(posedge clk or posedge rst) begin
+        if (rst)
+            count <= 4'b0000;
+        else if (count == 4'b1001)
+            count <= 4'b0000;
+        else
+            count <= count + 1;
+    end
+
+    always @(posedge clk or posedge rst) begin
+        if (rst)
+            q1 <= 0;
+        else
+            q1 <= count[2];
+    end
+
+    assign f_div10 = q1 | count[2];
+
+endmodule
